@@ -405,140 +405,134 @@ winButton.addEventListener('click', function(){
 
 
 function win() {
-	const winMessage = document.createElement('div');
-	const winText = document.createElement('div');
-	const winScore = document.createElement('span');
-	const score = document.querySelector('.score');
-	const scoreText = document.querySelector('.score2')
-	const timer = document.querySelector('.stopwatch');
-	const timerWin = document.createElement('span');
-	const inputWin = document.createElement('input');
-	const sendButton = document.createElement('button');
-	let winScoreValue = parseInt(currentScore) + 100;
+    const winMessage = document.createElement('div');
+    const winText = document.createElement('div');
+    const winScore = document.createElement('span');
+    const score = document.querySelector('.score');
+    const scoreText = document.querySelector('.score2');
+    const timer = document.querySelector('.stopwatch');
+    const timerWin = document.createElement('span');
+    const inputWin = document.createElement('input');
+    const sendButton = document.createElement('button');
+    let winScoreValue = parseInt(currentScore) + 100;
 
-	
+    winMessage.classList.add('win-message');
+    winText.classList.add('win-text');
+    winText.textContent = 'You Win';
+    winScore.classList.add('win-score');
+    winScore.textContent = scoreText.textContent + " " + (parseInt(score.textContent) + 100);
+    timerWin.classList.add('win-timer');
+    timerWin.textContent = timer.textContent;
+    inputWin.classList.add('win-input');
+    inputWin.setAttribute('type', 'text');
+    inputWin.setAttribute('maxlength', '3');
+    inputWin.setAttribute('placeholder', 'Enter Your Name');
+    sendButton.classList.add('send-button');
+    sendButton.innerHTML = '<i class="fa-solid fa-paper-plane"></i>';
 
-	winMessage.classList.add('win-message');
-	winText.classList.add('win-text');
-	winText.textContent = 'You Win';
-	winScore.classList.add('win-score')
-	winScore.textContent =  scoreText.textContent+ " " + (parseInt(score.textContent) + 100);
-	timerWin.classList.add('win-timer');
-	timerWin.textContent = timer.textContent;
-	inputWin.classList.add('win-input');
-	inputWin.setAttribute('type', 'text');
-	inputWin.setAttribute('maxlength', '3');
-	inputWin.setAttribute('placeholder', 'Enter Your Name');
-	sendButton.classList.add('send-button');
-	sendButton.innerHTML = '<i class="fa-solid fa-paper-plane"></i>';
+    fondo.appendChild(winMessage);
+    winMessage.appendChild(winText);
+    winMessage.appendChild(winScore);
+    winMessage.appendChild(timerWin);
+    winMessage.appendChild(inputWin);
+    winMessage.appendChild(sendButton);
 
+    function save(nameF, scoreF, timeF) {
+        const data = { name: nameF, score: scoreF, time: timeF };
+        fetch(`http://localhost/Red%20Memory/score.php`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('success', data);
+        })
+        .catch((error) => {
+            console.error('error', error);
+        });
 
+        cache.set(nameF, data);
 
-
-	fondo.appendChild(winMessage);
-	winMessage.appendChild(winText);
-	winMessage.appendChild(winScore);
-	winMessage.appendChild(timerWin);
-	winMessage.appendChild(inputWin);
-	winMessage.appendChild(sendButton);
-
-	sendButton.addEventListener('click', function(){
-
-		const winInput = document.querySelector('.win-input');
-		const scoreTabWin = document.createElement('button');
-		const restart = document.createElement('button');
-		const home = document.createElement('button');
-		const name = document.createElement('span');
-		const nameTitle = document.createElement('span');
-		const timeTitle = document.createElement('span');
-		const scoreTitle = document.createElement('span');
-		const inputName = inputWin.value.trim();
-
-
-		if (inputName === '') {
-        alert('Por favor, introduce un nombre');
-        return
+        if (cache.size > 10) {
+            const firstElement = cache.keys().next().value;
+            cache.delete(firstElement);
         }
-		
+    }
 
-		save(inputWin.value, score.textContent, timerWin.textContent);
+    sendButton.addEventListener('click', function() {
+        const inputName = inputWin.value.trim();
 
+        if (inputName === '') {
+            alert('Por favor, introduce un nombre');
+            return;
+        }
 
+        save(inputWin.value, score.textContent, timerWin.textContent);
 
-		scoreTabWin.classList.add('score-tab-button');
-		restart.classList.add('restart');
-		home.classList.add('home');
-		scoreTabWin.innerHTML = '<i class="fa-solid fa-list"></i>';
-		home.innerHTML = '<i class="fa-solid fa-house"></i>';
-		restart.innerHTML = '<i class="fa-solid fa-rotate-right"></i>';
-		winMessage.classList.toggle('win-message');
-		winMessage.classList.toggle('win-message2')
-		timerWin.classList.toggle('win-timer');
-		timerWin.classList.toggle('win-timer2');
-		winScore.classList.toggle('win-score');
-		winScore.classList.toggle('win-score2');
-		name.classList.add('name');
-		name.textContent = inputWin.value;
-		nameTitle.classList.add('name-title');
-		timeTitle.classList.add('time-title');
-		scoreTitle.classList.add('score-title');
-		nameTitle.textContent = 'Name:'
-    	timeTitle.textContent = 'Time:'
-		scoreTitle.textContent = 'Score:'
+        const scoreTabWin = document.createElement('button');
+        const restart = document.createElement('button');
+        const home = document.createElement('button');
+        const name = document.createElement('span');
+        const nameTitle = document.createElement('span');
+        const timeTitle = document.createElement('span');
+        const scoreTitle = document.createElement('span');
 
+        scoreTabWin.classList.add('score-tab-button');
+        restart.classList.add('restart');
+        home.classList.add('home');
+        scoreTabWin.innerHTML = '<i class="fa-solid fa-list"></i>';
+        home.innerHTML = '<i class="fa-solid fa-house"></i>';
+        restart.innerHTML = '<i class="fa-solid fa-rotate-right"></i>';
+        winMessage.classList.toggle('win-message');
+        winMessage.classList.toggle('win-message2');
+        timerWin.classList.toggle('win-timer');
+        timerWin.classList.toggle('win-timer2');
+        winScore.classList.toggle('win-score');
+        winScore.classList.toggle('win-score2');
+        name.classList.add('name');
+        name.textContent = inputWin.value;
+        nameTitle.classList.add('name-title');
+        timeTitle.classList.add('time-title');
+        scoreTitle.classList.add('score-title');
+        nameTitle.textContent = 'Name:';
+        timeTitle.textContent = 'Time:';
+        scoreTitle.textContent = 'Score:';
 
+        scoreTabWin.addEventListener('click', function() {
+            scoreTab();
+        });
 
-		scoreTabWin.addEventListener('click', function() {
-			scoreTab();
-		})
+        restart.addEventListener('click', function() {
+            winMessage.remove();
+            reset();
+        });
 
-		restart.addEventListener('click', function(){
+        winMessage.appendChild(scoreTabWin);
+        winMessage.appendChild(restart);
+        winMessage.appendChild(home);
+        winMessage.appendChild(name);
+        winMessage.appendChild(nameTitle);
+        winMessage.appendChild(timeTitle);
+        winMessage.appendChild(scoreTitle);
 
-	        winMessage.remove();
+        inputWin.remove();
+        sendButton.remove();
+    });
 
-	        reset();
-		})
+    stopStopwatch();
 
-		winMessage.appendChild(scoreTabWin);
-		winMessage.appendChild(restart);
-		winMessage.appendChild(home);
-		winMessage.appendChild(name);
-		winMessage.appendChild(nameTitle);
-		winMessage.appendChild(timeTitle);
-		winMessage.appendChild(scoreTitle);
-
-
-		winInput.remove();
-		sendButton.remove();
-
-	})
-
-
-	stopStopwatch();
-
-	let pause1 = document.querySelector('.pause-title');
-	let titleWin = document.querySelector('.text-title');
-
-	fondo.style.display = 'flex';
-	startTitle.style.display = 'none';
-
-	titleWin.textContent = '// You Win //';
+    let titleWin = document.querySelector('.text-title');
+    fondo.style.display = 'flex';
+    startTitle.style.display = 'none';
+    titleWin.textContent = '// You Win //';
 }
 
-function save(nameF, scoreF, timeF) {
-	const data = {scoreF, timeF };
-
-	cache.set(nameF, data);
-
-	if (cache.size > 10) {
-		const firstElement = cache.key().netx().vvalue;
-		cahe.delete(firstElement);
-	}
-
-
-}
-
+// Corrección de la definición duplicada de la función `save`
+// y asegurarse de no tener funciones definidas dos veces.
 
 musicTitle.addEventListener('click', function() {
-	pausePlay();
-})
+    pausePlay();
+});
